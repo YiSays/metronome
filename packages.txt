@@ -1,3 +1,2 @@
-build-essential
-pkg-config
+alsa-utils
 libasound2-dev

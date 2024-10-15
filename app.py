@@ -2,6 +2,19 @@ import streamlit as st
 import time
 import simpleaudio as sa
 
+# Initialize session state variables
+if "initialized" not in st.session_state:
+    st.session_state.initialized = True
+    st.session_state.running = False
+    st.session_state.presets = {
+        "Song 1": {"bpm": 60, "tempo_type": "4/4"},
+        "Song 2": {"bpm": 70, "tempo_type": "3/4"},
+        "Song 3": {"bpm": 80, "tempo_type": "6/8"},
+        "Song 4": {"bpm": 90, "tempo_type": "4/4"},
+    }
+    st.session_state.bpm = 60
+    st.session_state.tempo_type = "4/4"
+
 # App Layout
 st.set_page_config(initial_sidebar_state="collapsed", page_title="Metronome App")
 st.title("Metronome App")
@@ -9,27 +22,15 @@ st.title("Metronome App")
 # Sidebar for song presets
 st.sidebar.title("Presets")
 
-# Initialize presets if not done
-if "presets" not in st.session_state:
-    st.session_state.presets = {
-        "Song 1": {"bpm": 60, "tempo_type": "4/4"},
-        "Song 2": {"bpm": 70, "tempo_type": "3/4"},
-        "Song 3": {"bpm": 80, "tempo_type": "6/8"},
-        "Song 4": {"bpm": 90, "tempo_type": "4/4"},
-    }
-
-if "running" not in st.session_state:
-    st.session_state.running = False
-
 
 # Function to update preset
 def update_preset(song_name):
     st.session_state.presets[song_name]["bpm"] = st.session_state[f"{song_name}_bpm"]
-    st.session_state["bpm"] = st.session_state.presets[song_name]["bpm"]
+    st.session_state.bpm = st.session_state.presets[song_name]["bpm"]
     st.session_state.presets[song_name]["tempo_type"] = st.session_state[
         f"{song_name}_tempo_type"
     ]
-    st.session_state["tempo_type"] = st.session_state.presets[song_name]["tempo_type"]
+    st.session_state.tempo_type = st.session_state.presets[song_name]["tempo_type"]
 
 
 @st.cache_data
@@ -70,25 +71,24 @@ for song_name in st.session_state.presets:
 
 # Main app area
 tempo_type = st.radio(
-    "Tempo Type", key="tempo_type", options=["4/4", "3/4", "6/8"], horizontal=True
+    "Tempo Type", options=["4/4", "3/4", "6/8"], horizontal=True, key="tempo_type"
 )
-bpm = st.slider("BPM", min_value=40, max_value=160, value=60, key="bpm")
+bpm = st.slider("BPM", min_value=40, max_value=160, key="bpm")
 
 # Calculate beat interval and number of dots
 num_beats = int(tempo_type.split("/")[0])
 beat_unit = int(tempo_type.split("/")[1]) / 4
 beat_interval = 60 / bpm / beat_unit
 
-
 st.write(f"Current Settings: {tempo_type} - {bpm} BPM")
-col_beat_1, col_beat_2, col_beat_3 = st.columns([1, 3, 5])
+col_beat_1, col_beat_2, col_beat_3 = st.columns([1, 3, 3])
 col_beat_1.text("")
 col_beat_1.text("")
-start_metronome = col_beat_1.button("Start")
+start_metronome = col_beat_1.button("Start", key="start_button")
 flash_placeholder = col_beat_2.markdown("# " + " ".join(["○ "] * num_beats))
 col_beat_3.text("")
 col_beat_3.text("")
-stop_metronome = col_beat_3.button("Stop")
+stop_metronome = col_beat_3.button("Stop", key="stop_button")
 
 # Sound files
 hi_beat_sound = load_audio("Synth_Bell_B_hi.wav")
@@ -103,13 +103,10 @@ if stop_metronome:
 
 while st.session_state.running:
     for i in range(num_beats):
-
-        # Stop if the button was pressed
         if not st.session_state.running:
             break
 
-        # Play the sound and flash dots
-        if not i:
+        if i == 0:
             hi_beat_sound.play()
         else:
             lo_beat_sound.play()
