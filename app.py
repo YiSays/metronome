@@ -4,6 +4,7 @@ import simpleaudio as sa
 
 # App Layout
 st.title("Metronome App")
+st.set_page_config(initial_sidebar_state="collapsed", page_title="Metronome App")
 
 # Sidebar for song presets
 st.sidebar.title("Presets")
