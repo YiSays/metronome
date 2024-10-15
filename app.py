@@ -4,6 +4,7 @@ import simpleaudio as sa
 
 # App Layout
 st.set_page_config(initial_sidebar_state="collapsed", page_title="Metronome App")
+st.set_option("client.showWarningDetails", False)
 st.title("Metronome App")
 
 # Sidebar for song presets
@@ -18,6 +19,9 @@ if "presets" not in st.session_state:
         "Song 4": {"bpm": 90, "tempo_type": "4/4"},
     }
 
+if "running" not in st.session_state:
+    st.session_state.running = False
+
 
 # Function to update preset
 def update_preset(song_name):
@@ -27,6 +31,11 @@ def update_preset(song_name):
         f"{song_name}_tempo_type"
     ]
     st.session_state["tempo_type"] = st.session_state.presets[song_name]["tempo_type"]
+
+
+@st.cache_data
+def load_audio(file_path):
+    return sa.WaveObject.from_wave_file(file_path)
 
 
 # Display and edit presets
@@ -82,13 +91,9 @@ col_beat_3.text("")
 col_beat_3.text("")
 stop_metronome = col_beat_3.button("Stop")
 
-# Initialize metronome control
-if "running" not in st.session_state:
-    st.session_state.running = False
-
 # Sound files
-hi_beat_sound = sa.WaveObject.from_wave_file("sounds/Synth_Bell_B_hi.wav")
-lo_beat_sound = sa.WaveObject.from_wave_file("sounds/Synth_Bell_B_lo.wav")
+hi_beat_sound = load_audio("sounds/Synth_Bell_B_hi.wav")
+lo_beat_sound = load_audio("sounds/Synth_Bell_B_lo.wav")
 
 # Metronome loop
 if start_metronome:
@@ -99,6 +104,11 @@ if stop_metronome:
 
 while st.session_state.running:
     for i in range(num_beats):
+
+        # Stop if the button was pressed
+        if not st.session_state.running:
+            break
+
         # Play the sound and flash dots
         if not i:
             hi_beat_sound.play()
@@ -106,7 +116,3 @@ while st.session_state.running:
             lo_beat_sound.play()
         flash_placeholder.markdown("# " + "● " * (i + 1) + "○ " * (num_beats - i - 1))
         time.sleep(beat_interval)
-
-        # Stop if the button was pressed
-        if not st.session_state.running:
-            break
