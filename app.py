@@ -4,7 +4,7 @@ import simpleaudio as sa
 
 # App Layout
 st.set_page_config(initial_sidebar_state="collapsed", page_title="Metronome App")
-st.set_option("client.showWarningDetails", False)
+st.set_option("client.disableWidgetStateDuplicationWarning", True)
 st.title("Metronome App")
 
 # Sidebar for song presets
