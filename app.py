@@ -91,8 +91,8 @@ col_beat_3.text("")
 stop_metronome = col_beat_3.button("Stop")
 
 # Sound files
-hi_beat_sound = load_audio("sounds/Synth_Bell_B_hi.wav")
-lo_beat_sound = load_audio("sounds/Synth_Bell_B_lo.wav")
+hi_beat_sound = load_audio("Synth_Bell_B_hi.wav")
+lo_beat_sound = load_audio("Synth_Bell_B_lo.wav")
 
 # Metronome loop
 if start_metronome:
