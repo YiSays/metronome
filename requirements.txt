@@ -1,1 +1,2 @@
-simpleaudio
+streamlit==1.24.0
+simpleaudio==1.0.4
