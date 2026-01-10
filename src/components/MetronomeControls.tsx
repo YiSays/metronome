@@ -100,13 +100,6 @@ const MetronomeControls: React.FC<MetronomeControlsProps> = ({
           </select>
         </div>
       </div>
-
-      <div className="control-info">
-        <div className="tempo-info">
-          <span>Interval: {Math.round(60000 / bpm)}ms</span>
-          <span>Beats per measure: {timeSignature.beatsPerMeasure}</span>
-        </div>
-      </div>
     </div>
   )
 }

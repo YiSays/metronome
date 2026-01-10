@@ -5,20 +5,21 @@
 }
 
 .app-sidebar {
-  width: 200px;
-  background: rgba(15, 23, 42, 0.9);
+  width: 240px; /* Slightly wider for presets */
+  background: rgba(15, 23, 42, 0.95);
   backdrop-filter: blur(10px);
   border-right: 1px solid #334155;
   display: flex;
   flex-direction: column;
-  padding: 1rem;
+  padding: 1.5rem 1rem;
   position: sticky;
   top: 0;
   height: 100vh;
+  overflow-y: auto; /* Allow scrolling if needed */
 }
 
 .app-title {
-  font-size: 1.2rem;
+  font-size: 1.5rem;
   margin-bottom: 2rem;
   background: linear-gradient(135deg, #38bdf8, #a78bfa);
   -webkit-background-clip: text;
@@ -26,13 +27,113 @@
   background-clip: text;
   text-shadow: 0 0 10px rgba(56, 189, 248, 0.3);
   text-align: center;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+}
+
+.sidebar-section {
+  margin-bottom: 2rem;
+}
+
+.sidebar-header {
+  color: #94a3b8;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  margin-bottom: 0.5rem;
+  padding-left: 0.5rem;
+  font-weight: 600;
+}
+
+.sidebar-hint {
+  font-size: 0.7rem;
+  color: #64748b;
+  padding: 0 0.5rem;
+  margin-bottom: 1rem;
+  line-height: 1.3;
+  font-style: italic;
+}
+
+.preset-list-sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.preset-btn-sidebar {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border: 1px solid transparent;
+  background: transparent;
+  color: #cbd5e1;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-align: left;
+}
+
+.preset-btn-sidebar:hover {
+  background: rgba(56, 189, 248, 0.1);
+  color: #e2e8f0;
+}
+
+.preset-btn-sidebar.active {
+  background: rgba(56, 189, 248, 0.15);
+  border-color: rgba(56, 189, 248, 0.3);
+  color: #38bdf8;
+}
+
+.preset-btn-sidebar .preset-name {
+  font-weight: 600;
+  font-size: 0.95rem;
+  margin-bottom: 0.2rem;
+}
+
+.preset-btn-sidebar .preset-info-mini {
+  font-size: 0.75rem;
+  color: #64748b;
+  font-family: 'Courier New', monospace;
+}
+
+.preset-btn-sidebar.active .preset-info-mini {
+  color: #7dd3fc;
 }
 
 .app-nav {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
-  margin-bottom: 2rem;
+  margin-top: auto; /* Push to bottom if space permits, or just follow presets */
+  padding-top: 1rem;
+  border-top: 1px solid #334155;
+}
+
+.nav-btn {
+  padding: 0.75rem 1rem;
+  border: 1px solid transparent; /* Remove default border */
+  background: transparent; /* Cleaner look */
+  color: #94a3b8;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-weight: 500;
+  text-align: left;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 0.95rem;
+}
+
+.nav-btn:hover {
+  background: rgba(255, 255, 255, 0.05);
+  color: #e2e8f0;
+}
+
+.nav-btn.active {
+  background: #1e293b;
+  border: 1px solid #475569;
+  color: #38bdf8;
+  box-shadow: none; /* simpler active state */
 }
 
 .volume-control {
@@ -40,11 +141,13 @@
   flex-direction: column;
   gap: 0.5rem;
   padding: 1rem;
-  background: #0f172a;
+  background: rgba(15, 17, 42, 0.5);
   border-radius: 0.5rem;
   border: 1px solid #334155;
-  margin-bottom: auto;
+  margin-top: 1rem;
 }
+
+/* ... keep remaining styles ... */
 
 .volume-label {
   color: #94a3b8;
@@ -55,8 +158,8 @@
 
 .volume-slider-sidebar {
   width: 100%;
-  height: 8px;
-  border-radius: 4px;
+  height: 6px;
+  border-radius: 3px;
   background: #334155;
   outline: none;
   -webkit-appearance: none;
@@ -66,57 +169,68 @@
 .volume-slider-sidebar::-webkit-slider-thumb {
   -webkit-appearance: none;
   appearance: none;
-  width: 16px;
-  height: 16px;
+  width: 14px;
+  height: 14px;
   border-radius: 50%;
   background: #38bdf8;
   cursor: pointer;
 }
 
-.volume-slider-sidebar::-moz-range-thumb {
-  width: 16px;
-  height: 16px;
-  border-radius: 50%;
-  background: #38bdf8;
-  cursor: pointer;
-  border: none;
-}
-
-.nav-btn {
-  padding: 1rem 1rem;
-  border: 1px solid #475569;
-  background: #1e293b;
-  color: #e2e8f0;
-  border-radius: 0.5rem;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  font-weight: 500;
-  text-align: left;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-.nav-btn:hover {
-  background: #334155;
-  border-color: #64748b;
-}
-
-.nav-btn.active {
-  background: linear-gradient(135deg, #38bdf8, #a78bfa);
-  border: none;
-  color: white;
-  box-shadow: 0 0 15px rgba(56, 189, 248, 0.4);
-}
-
+/* ... rest of the existing styles ... */
 .app-main {
   flex: 1;
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 2rem;
+  overflow-y: auto; /* Main content scrolls independently */
+  max-height: 100vh;
 }
 
+/* ... Metronome Controls Styles ... */
+.metronome-controls {
+  background: #1e293b;
+  padding: 2.5rem; /* More padding */
+  border-radius: 1.5rem; /* Softer corners */
+  border: 1px solid #334155;
+  width: 100%;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+}
+
+.bpm-value {
+  font-size: 4rem; /* Larger BPM */
+  /* ... */
+}
+
+/* ... Visual Metronome ... */
+.visual-metronome {
+  margin-bottom: 2rem;
+}
+
+/* ... Footer ... */
+.app-footer {
+  /* This might overlap with sidebar if not careful, 
+     but usually it's fixed relative to viewport. 
+     With sticky sidebar, let's adjust z-index if needed */
+  z-index: 10;
+}
+
+/* Helper to ensure scrollbars look nice */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #0f172a; 
+}
+::-webkit-scrollbar-thumb {
+  background: #334155; 
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #475569; 
+}
+
+/* ... existing metronome styles ... */
 .metronome-container {
   display: flex;
   flex-direction: column;
@@ -171,6 +285,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
+  padding-left: 260px; /* Offset for sidebar width + padding */
 }
 
 .footer-info {

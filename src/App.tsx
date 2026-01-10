@@ -1,10 +1,9 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useMetronome } from './hooks/useMetronome'
-import { Preset, PresetManager } from './utils/presets'
+import { Preset, defaultPresets } from './utils/presets'
 import './App.css'
 import MetronomeControls from './components/MetronomeControls'
 import VisualMetronome from './components/VisualMetronome'
-import PresetManagerComponent from './components/PresetManager'
 import TapTempo from './components/TapTempo'
 
 function App() {
@@ -24,44 +23,45 @@ function App() {
     initializeAudio
   } = useMetronome()
 
-  const [currentPreset, setCurrentPreset] = useState<Preset | null>(null)
-  const [activeTab, setActiveTab] = useState<'controls' | 'presets' | 'tap'>('controls')
+  // Initialize presets state from defaultPresets (in-memory only for this session)
+  const [presets, setPresets] = useState<Preset[]>(defaultPresets)
+  const [activePresetId, setActivePresetId] = useState<string>(defaultPresets[0].id)
+  
+  const [activeTab, setActiveTab] = useState<'controls' | 'tap'>('controls')
   const [isTapActive, setIsTapActive] = useState(false)
   const [tapTimes, setTapTimes] = useState<number[]>([])
 
-  const handlePresetSelect = (preset: Preset) => {
+  // Initialize metronome with the first preset's settings on mount
+  useEffect(() => {
+    const firstPreset = defaultPresets[0]
+    setBpm(firstPreset.bpm)
+    setTimeSignature(firstPreset.timeSignature)
+    setSoundType(firstPreset.soundType)
+    setVolume(firstPreset.volume)
+  }, []) // Empty dependency array means this runs once on mount
+
+  const handlePresetSelect = (presetId: string) => {
+    const preset = presets.find(p => p.id === presetId)
+    if (!preset) return
+
+    setActivePresetId(presetId)
+    
+    // Update metronome settings
     setBpm(preset.bpm)
     setTimeSignature(preset.timeSignature)
     setSoundType(preset.soundType)
     setVolume(preset.volume)
-    setCurrentPreset(preset)
   }
 
-  const handleSavePreset = (preset: Preset) => {
-    // Update preset with current state
-    const updatedPreset = {
-      ...preset,
-      bpm,
-      timeSignature: {
-        beatsPerMeasure: timeSignature.beatsPerMeasure,
-        beatUnit: timeSignature.beatUnit as 4 | 8
-      },
-      soundType,
-      volume
-    }
-    PresetManager.savePreset(updatedPreset)
-    setCurrentPreset(updatedPreset)
-  }
-
-  const handleDeletePreset = (id: string) => {
-    PresetManager.deletePreset(id)
-    if (currentPreset?.id === id) {
-      setCurrentPreset(null)
-    }
-  }
-
-  const handleResetPresets = () => {
-    PresetManager.resetToDefaults()
+  // Generic helper to update the active preset when a setting changes
+  const updateActivePreset = (updates: Partial<Preset>) => {
+    setPresets(prevPresets => 
+      prevPresets.map(p => 
+        p.id === activePresetId 
+          ? { ...p, ...updates } 
+          : p
+      )
+    )
   }
 
   const handleTapTempoToggle = () => {
@@ -74,13 +74,53 @@ function App() {
 
   const handleBpmChange = (newBpm: number) => {
     setBpm(newBpm)
-    setCurrentPreset(null) // Clear preset selection when BPM changes manually
+    updateActivePreset({ bpm: newBpm })
+  }
+
+  const handleTimeSignatureChange = (newTimeSignature: { beatsPerMeasure: number; beatUnit: number }) => {
+    setTimeSignature(newTimeSignature)
+    updateActivePreset({ 
+      timeSignature: { 
+        beatsPerMeasure: newTimeSignature.beatsPerMeasure, 
+        beatUnit: newTimeSignature.beatUnit as 4 | 8 
+      } 
+    })
+  }
+
+  const handleSoundTypeChange = (newSoundType: 'woodblock' | 'click' | 'doublePulse' | 'bell' | 'amber') => {
+    setSoundType(newSoundType)
+    updateActivePreset({ soundType: newSoundType })
+  }
+
+  const handleVolumeChange = (newVolume: number) => {
+    setVolume(newVolume)
+    updateActivePreset({ volume: newVolume })
   }
 
   return (
     <div className="app">
       <aside className="app-sidebar">
         <div className="app-title">Metronome</div>
+        
+        <div className="sidebar-section">
+          <div className="sidebar-header">Presets</div>
+          <p className="sidebar-hint">Customize up to 6 songs. Your changes stay until you refresh.</p>
+          <div className="preset-list-sidebar">
+            {presets.map(preset => (
+              <button
+                key={preset.id}
+                className={`preset-btn-sidebar ${activePresetId === preset.id ? 'active' : ''}`}
+                onClick={() => handlePresetSelect(preset.id)}
+              >
+                <div className="preset-name">{preset.name}</div>
+                <div className="preset-info-mini">
+                  {preset.bpm} BPM • {preset.timeSignature.beatsPerMeasure}/{preset.timeSignature.beatUnit}
+                </div>
+              </button>
+            ))}
+          </div>
+        </div>
+
         <nav className="app-nav">
           <button
             className={`nav-btn ${activeTab === 'controls' ? 'active' : ''}`}
@@ -89,30 +129,12 @@ function App() {
             🎼 Controls
           </button>
           <button
-            className={`nav-btn ${activeTab === 'presets' ? 'active' : ''}`}
-            onClick={() => setActiveTab('presets')}
-          >
-            📋 Presets
-          </button>
-          <button
             className={`nav-btn ${activeTab === 'tap' ? 'active' : ''}`}
             onClick={() => setActiveTab('tap')}
           >
             👆 Tap Tempo
           </button>
         </nav>
-        <div className="volume-control">
-          <div className="volume-label">Volume</div>
-          <input
-            type="range"
-            min="0"
-            max="1"
-            step="0.1"
-            value={volume}
-            onChange={(e) => setVolume(parseFloat(e.target.value))}
-            className="volume-slider-sidebar"
-          />
-        </div>
       </aside>
 
       <main className="app-main">
@@ -160,11 +182,11 @@ function App() {
                   bpm={bpm}
                   onBpmChange={handleBpmChange}
                   timeSignature={timeSignature}
-                  onTimeSignatureChange={setTimeSignature}
+                  onTimeSignatureChange={handleTimeSignatureChange}
                   soundType={soundType}
-                  onSoundTypeChange={setSoundType}
+                  onSoundTypeChange={handleSoundTypeChange}
                   volume={volume}
-                  onVolumeChange={setVolume}
+                  onVolumeChange={handleVolumeChange}
                 />
               </div>
               <div className="play-section">
@@ -176,18 +198,6 @@ function App() {
                 </button>
               </div>
             </div>
-          </div>
-        )}
-
-        {activeTab === 'presets' && (
-          <div className="presets-container">
-            <PresetManagerComponent
-              currentPreset={currentPreset}
-              onPresetSelect={handlePresetSelect}
-              onSavePreset={handleSavePreset}
-              onDeletePreset={handleDeletePreset}
-              onResetPresets={handleResetPresets}
-            />
           </div>
         )}
 
