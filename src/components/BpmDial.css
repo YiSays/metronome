@@ -1,0 +1,113 @@
+.bpm-dial-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 1rem;
+  position: relative;
+  touch-action: none;
+}
+
+.bpm-dial {
+  position: relative;
+  width: 300px;
+  height: 300px;
+  user-select: none;
+  cursor: pointer;
+}
+
+.dial-svg {
+  overflow: visible;
+  filter: drop-shadow(0 10px 20px rgba(0,0,0,0.3));
+  transition: transform 0.05s ease-out;
+}
+
+.dial-svg.pulse-beat {
+  transform: scale(1.03);
+  filter: drop-shadow(0 0 15px rgba(56, 189, 248, 0.4));
+  transition: transform 0.05s ease-out;
+}
+
+.dial-center-content {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+
+.dial-bpm-label {
+  font-size: 1rem;
+  color: #94a3b8;
+  font-weight: 600;
+  letter-spacing: 2px;
+  margin-bottom: 0.5rem;
+}
+
+.dial-bpm-value {
+  font-size: 5rem;
+  font-weight: 800;
+  line-height: 1;
+  color: #e2e8f0;
+  font-variant-numeric: tabular-nums;
+  margin-bottom: 1rem;
+  text-shadow: 0 4px 12px rgba(0,0,0,0.5);
+  transition: all 0.05s ease-out;
+}
+
+.dial-bpm-value.flash-text {
+  color: #38bdf8;
+  text-shadow: 0 0 20px rgba(56, 189, 248, 0.8);
+  transform: scale(1.1);
+}
+
+.dial-play-btn {
+  pointer-events: auto;
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  border: none;
+  background: linear-gradient(135deg, #38bdf8, #818cf8);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 4px 15px rgba(56, 189, 248, 0.4);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.dial-play-btn:hover {
+  transform: scale(1.05);
+  box-shadow: 0 6px 20px rgba(56, 189, 248, 0.5);
+}
+
+.dial-play-btn:active {
+  transform: scale(0.95);
+}
+
+.dial-play-btn.playing {
+  background: linear-gradient(135deg, #ef4444, #f43f5e);
+  box-shadow: 0 4px 15px rgba(239, 68, 68, 0.4);
+}
+
+.dial-play-btn.playing:hover {
+  box-shadow: 0 6px 20px rgba(239, 68, 68, 0.5);
+}
+
+@media (max-width: 360px) {
+  .bpm-dial {
+    width: 260px;
+    height: 260px;
+  }
+  .dial-svg {
+    width: 260px;
+    height: 260px;
+  }
+  .dial-bpm-value {
+    font-size: 4rem;
+  }
+}

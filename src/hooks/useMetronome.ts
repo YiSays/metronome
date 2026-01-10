@@ -18,6 +18,10 @@ export const useMetronome = () => {
   const scheduleAheadTimeRef = useRef(0.1)
   const rafTimerRef = useRef<number | null>(null)
   const beatPatternRef = useRef<any>(null)
+  
+  // Queue for visual synchronization
+  // Stores { time: number, beatIndex: number }
+  const scheduledBeatsRef = useRef<Array<{ time: number, beatIndex: number }>>([])
 
   const initializeAudio = useCallback(async () => {
     if (isInitializedRef.current) return
@@ -59,8 +63,13 @@ export const useMetronome = () => {
     // Schedule the sound
     audioGenerator.current.scheduleSound(newSound, time, masterGainRef.current)
 
-    // For visual metronome, we'll trigger a callback
-    // This will be handled by the visual component
+    // Push to visual queue
+    scheduledBeatsRef.current.push({ time, beatIndex: beatNumber })
+    
+    // Limit queue size to prevent memory leaks (though it should be consumed)
+    if (scheduledBeatsRef.current.length > 50) {
+       scheduledBeatsRef.current.shift()
+    }
   }, [volume])
 
   const scheduler = useCallback(() => {
@@ -168,6 +177,10 @@ export const useMetronome = () => {
     }
   }, [])
 
+  const getAudioTime = useCallback(() => {
+    return audioContextRef.current?.currentTime || 0
+  }, [])
+
   return {
     isPlaying,
     bpm,
@@ -181,6 +194,8 @@ export const useMetronome = () => {
     start,
     stop,
     toggle,
-    initializeAudio
+    initializeAudio,
+    scheduledBeatsRef, // Expose for visual sync
+    getAudioTime       // Expose for visual sync
   }
 }
