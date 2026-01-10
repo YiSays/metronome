@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useEffect, useRef } from 'react'
 
 interface VisualMetronomeProps {
   isPlaying: boolean
@@ -17,14 +17,12 @@ const VisualMetronome: React.FC<VisualMetronomeProps> = ({
   scheduledBeatsRef,
   getAudioTime
 }) => {
-  const [visualBeat, setVisualBeat] = useState(0)
   const animationRef = useRef<number>()
   const lastBeatRef = useRef<number>(0)
   const lastBeatIndexRef = useRef<number>(-1)
 
   useEffect(() => {
     if (!isPlaying) {
-      setVisualBeat(0)
       lastBeatIndexRef.current = -1
       return
     }
@@ -48,7 +46,6 @@ const VisualMetronome: React.FC<VisualMetronomeProps> = ({
              lastBeatIndexRef.current = nextBeat.beatIndex
              
              // Trigger immediate update
-             setVisualBeat(nextBeat.beatIndex)
              if (onCurrentBeatChange) {
                onCurrentBeatChange(nextBeat.beatIndex)
              }
