@@ -6,7 +6,7 @@ export const useMetronome = () => {
   const [isPlaying, setIsPlaying] = useState(false)
   const [bpm, setBpm] = useState(120)
   const [timeSignature, setTimeSignature] = useState<TimeSignature>({ beatsPerMeasure: 4, beatUnit: 4 })
-  const [soundType, setSoundType] = useState<SoundType>('woodblock')
+  const [soundType, setSoundType] = useState<SoundType>('hollowWood')
   const [volume, setVolume] = useState(0.5)
 
   const audioGenerator = useRef(new AudioGenerator())
@@ -55,17 +55,15 @@ export const useMetronome = () => {
     // because oscillators can only be started once
     const currentSoundType = isDownbeat ? downbeat : beat
 
-    // Apply volume adjustment for non-downbeat sounds to make them quieter
-    const soundVolume = isDownbeat ? volume : volume * 0.8 // Regular beats are 80% of downbeat volume
-
-    const newSound = audioGenerator.current.createSound(audioContextRef.current, currentSoundType, soundVolume, isDownbeat)
+    // Sound generation methods handle volume differentiation internally
+    const newSound = audioGenerator.current.createSound(audioContextRef.current, currentSoundType, volume, isDownbeat)
 
     // Schedule the sound
     audioGenerator.current.scheduleSound(newSound, time, masterGainRef.current)
 
     // Push to visual queue
     scheduledBeatsRef.current.push({ time, beatIndex: beatNumber })
-    
+
     // Limit queue size to prevent memory leaks (though it should be consumed)
     if (scheduledBeatsRef.current.length > 50) {
        scheduledBeatsRef.current.shift()

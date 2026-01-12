@@ -6,57 +6,57 @@ export interface Preset {
     beatsPerMeasure: number
     beatUnit: 4 | 8
   }
-  soundType: 'woodblock' | 'click' | 'doublePulse' | 'bell' | 'amber'
+  soundType: 'hollowWood' | 'naturalClave' | 'softLog' | 'mellowBongo' | 'gentleWoodBlock'
   volume: number
 }
 
 export const defaultPresets: Preset[] = [
   {
-    id: 'slow-jam',
-    name: 'Slow Jam',
+    id: 'slow-practice',
+    name: 'Slow Practice',
     bpm: 60,
     timeSignature: { beatsPerMeasure: 4, beatUnit: 4 },
-    soundType: 'woodblock',
+    soundType: 'softLog',
     volume: 0.5
   },
   {
     id: 'medium-groove',
     name: 'Medium Groove',
-    bpm: 120,
+    bpm: 100,
     timeSignature: { beatsPerMeasure: 4, beatUnit: 4 },
-    soundType: 'click',
+    soundType: 'hollowWood',
+    volume: 0.55
+  },
+  {
+    id: 'fast-beat',
+    name: 'Fast Beat',
+    bpm: 140,
+    timeSignature: { beatsPerMeasure: 4, beatUnit: 4 },
+    soundType: 'gentleWoodBlock',
     volume: 0.6
   },
   {
-    id: 'fast-punk',
-    name: 'Fast Punk',
-    bpm: 180,
-    timeSignature: { beatsPerMeasure: 4, beatUnit: 4 },
-    soundType: 'click',
-    volume: 0.7
-  },
-  {
-    id: 'waltz',
+    id: 'waltz-time',
     name: 'Waltz Time',
     bpm: 90,
     timeSignature: { beatsPerMeasure: 3, beatUnit: 4 },
-    soundType: 'bell',
+    soundType: 'mellowBongo',
     volume: 0.5
   },
   {
-    id: 'compound',
+    id: 'compound-meter',
     name: 'Compound Meter',
     bpm: 100,
     timeSignature: { beatsPerMeasure: 6, beatUnit: 8 },
-    soundType: 'woodblock',
-    volume: 0.5
+    soundType: 'naturalClave',
+    volume: 0.55
   },
   {
-    id: 'jazz-swing',
-    name: 'Jazz Swing',
+    id: 'jazz-session',
+    name: 'Jazz Session',
     bpm: 160,
     timeSignature: { beatsPerMeasure: 4, beatUnit: 4 },
-    soundType: 'amber',
+    soundType: 'hollowWood',
     volume: 0.6
   }
 ]

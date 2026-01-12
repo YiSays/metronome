@@ -102,16 +102,16 @@ const SettingsDrawer: React.FC<SettingsDrawerProps> = ({
 
           <section className="drawer-section">
             <h3>Sound</h3>
-            <select 
-              value={soundType} 
+            <select
+              value={soundType}
               onChange={(e) => onSoundTypeChange(e.target.value)}
               className="drawer-select"
             >
-              <option value="woodblock">Woodblock</option>
-              <option value="click">Digital Click</option>
-              <option value="doublePulse">Double Pulse</option>
-              <option value="bell">Mechanical Bell</option>
-              <option value="amber">Amber</option>
+              <option value="hollowWood">Hollow Wood</option>
+              <option value="naturalClave">Natural Clave</option>
+              <option value="softLog">Soft Log</option>
+              <option value="mellowBongo">Mellow Bongo</option>
+              <option value="gentleWoodBlock">Gentle Wood Block</option>
             </select>
           </section>
 
