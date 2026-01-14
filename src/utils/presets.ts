@@ -6,11 +6,51 @@ export interface Preset {
     beatsPerMeasure: number
     beatUnit: 4 | 8
   }
-  soundType: 'hollowWood' | 'naturalClave' | 'softLog' | 'mellowBongo' | 'gentleWoodBlock'
+  soundType: 'hollowWood' | 'naturalClave' | 'softLog' | 'mellowBongo' | 'gentleWoodBlock' | 'warmWoodenClave' | 'softWoodenBlock' | 'naturalWoodenLog' | 'gentleWoodenBongo' | 'mellowWoodenChime'
   volume: number
 }
 
 export const defaultPresets: Preset[] = [
+  {
+    id: 'warm-practice',
+    name: 'Warm Practice',
+    bpm: 75,
+    timeSignature: { beatsPerMeasure: 4, beatUnit: 4 },
+    soundType: 'warmWoodenClave',
+    volume: 0.5
+  },
+  {
+    id: 'soft-groove',
+    name: 'Soft Groove',
+    bpm: 95,
+    timeSignature: { beatsPerMeasure: 4, beatUnit: 4 },
+    soundType: 'softWoodenBlock',
+    volume: 0.55
+  },
+  {
+    id: 'natural-beat',
+    name: 'Natural Beat',
+    bpm: 120,
+    timeSignature: { beatsPerMeasure: 4, beatUnit: 4 },
+    soundType: 'naturalWoodenLog',
+    volume: 0.5
+  },
+  {
+    id: 'gentle-waltz',
+    name: 'Gentle Waltz',
+    bpm: 85,
+    timeSignature: { beatsPerMeasure: 3, beatUnit: 4 },
+    soundType: 'gentleWoodenBongo',
+    volume: 0.5
+  },
+  {
+    id: 'mellow-compound',
+    name: 'Mellow Compound',
+    bpm: 90,
+    timeSignature: { beatsPerMeasure: 6, beatUnit: 8 },
+    soundType: 'mellowWoodenChime',
+    volume: 0.55
+  },
   {
     id: 'slow-practice',
     name: 'Slow Practice',
@@ -18,46 +58,6 @@ export const defaultPresets: Preset[] = [
     timeSignature: { beatsPerMeasure: 4, beatUnit: 4 },
     soundType: 'softLog',
     volume: 0.5
-  },
-  {
-    id: 'medium-groove',
-    name: 'Medium Groove',
-    bpm: 100,
-    timeSignature: { beatsPerMeasure: 4, beatUnit: 4 },
-    soundType: 'hollowWood',
-    volume: 0.55
-  },
-  {
-    id: 'fast-beat',
-    name: 'Fast Beat',
-    bpm: 140,
-    timeSignature: { beatsPerMeasure: 4, beatUnit: 4 },
-    soundType: 'gentleWoodBlock',
-    volume: 0.6
-  },
-  {
-    id: 'waltz-time',
-    name: 'Waltz Time',
-    bpm: 90,
-    timeSignature: { beatsPerMeasure: 3, beatUnit: 4 },
-    soundType: 'mellowBongo',
-    volume: 0.5
-  },
-  {
-    id: 'compound-meter',
-    name: 'Compound Meter',
-    bpm: 100,
-    timeSignature: { beatsPerMeasure: 6, beatUnit: 8 },
-    soundType: 'naturalClave',
-    volume: 0.55
-  },
-  {
-    id: 'jazz-session',
-    name: 'Jazz Session',
-    bpm: 160,
-    timeSignature: { beatsPerMeasure: 4, beatUnit: 4 },
-    soundType: 'hollowWood',
-    volume: 0.6
   }
 ]
 

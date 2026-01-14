@@ -77,6 +77,16 @@ export class AudioGenerator {
         return this.createMellowBongoSound(audioContext, volume, isDownbeat)
       case 'gentleWoodBlock':
         return this.createGentleWoodBlockSound(audioContext, volume, isDownbeat)
+      case 'warmWoodenClave':
+        return this.createWarmWoodenClaveSound(audioContext, volume, isDownbeat)
+      case 'softWoodenBlock':
+        return this.createSoftWoodenBlockSound(audioContext, volume, isDownbeat)
+      case 'naturalWoodenLog':
+        return this.createNaturalWoodenLogSound(audioContext, volume, isDownbeat)
+      case 'gentleWoodenBongo':
+        return this.createGentleWoodenBongoSound(audioContext, volume, isDownbeat)
+      case 'mellowWoodenChime':
+        return this.createMellowWoodenChimeSound(audioContext, volume, isDownbeat)
       default:
         return this.createHollowWoodSound(audioContext, volume, isDownbeat)
     }
@@ -262,6 +272,180 @@ export class AudioGenerator {
     return { oscillator, gainNode, soundType: 'gentleWoodBlock' }
   }
 
+  // === NEW NATURAL WOODEN PERCUSSION FAMILY ===
+  // Designed for pleasant long-term listening in band settings
+  // Softer, warmer, more natural resonance for extended use
+
+  private createWarmWoodenClaveSound(audioContext: AudioContext, volume: number, isDownbeat: boolean): { oscillator: OscillatorNode, gainNode: GainNode, soundType: 'warmWoodenClave' } {
+    const oscillator = audioContext.createOscillator()
+    const gainNode = audioContext.createGain()
+    const filter = audioContext.createBiquadFilter()
+
+    // Base: 720Hz | Downbeat: 576Hz (warmer clave range)
+    const baseFreq = isDownbeat ? 576 : 720
+    oscillator.frequency.setValueAtTime(baseFreq, audioContext.currentTime)
+
+    // Sine wave for pure, warm clave sound
+    oscillator.type = 'sine'
+
+    // Gentle lowpass for warm wooden tone
+    filter.type = 'lowpass'
+    filter.frequency.setValueAtTime(1400, audioContext.currentTime)
+    filter.Q.setValueAtTime(isDownbeat ? 1.8 : 1.2, audioContext.currentTime)
+
+    const volumeBoost = 1.4
+    const targetVolume = isDownbeat ? volume * volumeBoost * 1.1 : volume * volumeBoost
+
+    const now = audioContext.currentTime
+
+    // Warm clave envelope - soft attack, gentle decay
+    gainNode.gain.cancelScheduledValues(now)
+    gainNode.gain.setValueAtTime(0, now)
+    gainNode.gain.linearRampToValueAtTime(targetVolume, now + 0.005)
+    gainNode.gain.exponentialRampToValueAtTime(0.001, now + (isDownbeat ? 0.18 : 0.14))
+
+    oscillator.connect(filter)
+    filter.connect(gainNode)
+
+    return { oscillator, gainNode, soundType: 'warmWoodenClave' }
+  }
+
+  private createSoftWoodenBlockSound(audioContext: AudioContext, volume: number, isDownbeat: boolean): { oscillator: OscillatorNode, gainNode: GainNode, soundType: 'softWoodenBlock' } {
+    const oscillator = audioContext.createOscillator()
+    const gainNode = audioContext.createGain()
+    const filter = audioContext.createBiquadFilter()
+
+    // Base: 560Hz | Downbeat: 448Hz (softer wood block range)
+    const baseFreq = isDownbeat ? 448 : 560
+    oscillator.frequency.setValueAtTime(baseFreq, audioContext.currentTime)
+
+    // Triangle wave for soft wooden character
+    oscillator.type = 'triangle'
+
+    // Very gentle filter for soft wood tone
+    filter.type = 'lowpass'
+    filter.frequency.setValueAtTime(900, audioContext.currentTime)
+    filter.Q.setValueAtTime(isDownbeat ? 1.5 : 0.8, audioContext.currentTime)
+
+    const volumeBoost = 1.3
+    const targetVolume = isDownbeat ? volume * volumeBoost * 1.1 : volume * volumeBoost
+
+    const now = audioContext.currentTime
+
+    // Soft wood block envelope - very gentle attack, warm decay
+    gainNode.gain.cancelScheduledValues(now)
+    gainNode.gain.setValueAtTime(0, now)
+    gainNode.gain.linearRampToValueAtTime(targetVolume, now + 0.008)
+    gainNode.gain.exponentialRampToValueAtTime(0.001, now + (isDownbeat ? 0.20 : 0.16))
+
+    oscillator.connect(filter)
+    filter.connect(gainNode)
+
+    return { oscillator, gainNode, soundType: 'softWoodenBlock' }
+  }
+
+  private createNaturalWoodenLogSound(audioContext: AudioContext, volume: number, isDownbeat: boolean): { oscillator: OscillatorNode, gainNode: GainNode, soundType: 'naturalWoodenLog' } {
+    const oscillator = audioContext.createOscillator()
+    const gainNode = audioContext.createGain()
+    const filter = audioContext.createBiquadFilter()
+
+    // Base: 160Hz | Downbeat: 128Hz (deep, natural log thump)
+    const baseFreq = isDownbeat ? 128 : 160
+    oscillator.frequency.setValueAtTime(baseFreq, audioContext.currentTime)
+
+    // Sine wave for deep, natural log thump
+    oscillator.type = 'sine'
+
+    // Very dark, warm filter
+    filter.type = 'lowpass'
+    filter.frequency.setValueAtTime(400, audioContext.currentTime)
+    filter.Q.setValueAtTime(isDownbeat ? 1.8 : 1.0, audioContext.currentTime)
+
+    const volumeBoost = 1.8
+    const targetVolume = isDownbeat ? volume * volumeBoost * 1.1 : volume * volumeBoost
+
+    const now = audioContext.currentTime
+
+    // Natural log envelope - gentle thump, very warm decay
+    gainNode.gain.cancelScheduledValues(now)
+    gainNode.gain.setValueAtTime(0, now)
+    gainNode.gain.linearRampToValueAtTime(targetVolume, now + 0.012)
+    gainNode.gain.exponentialRampToValueAtTime(0.001, now + (isDownbeat ? 0.22 : 0.18))
+
+    oscillator.connect(filter)
+    filter.connect(gainNode)
+
+    return { oscillator, gainNode, soundType: 'naturalWoodenLog' }
+  }
+
+  private createGentleWoodenBongoSound(audioContext: AudioContext, volume: number, isDownbeat: boolean): { oscillator: OscillatorNode, gainNode: GainNode, soundType: 'gentleWoodenBongo' } {
+    const oscillator = audioContext.createOscillator()
+    const gainNode = audioContext.createGain()
+    const filter = audioContext.createBiquadFilter()
+
+    // Base: 380Hz | Downbeat: 304Hz (gentle bongo range)
+    const baseFreq = isDownbeat ? 304 : 380
+    oscillator.frequency.setValueAtTime(baseFreq, audioContext.currentTime)
+
+    // Triangle wave for gentle bongo character
+    oscillator.type = 'triangle'
+
+    // Warm, gentle filter for bongo tone
+    filter.type = 'lowpass'
+    filter.frequency.setValueAtTime(700, audioContext.currentTime)
+    filter.Q.setValueAtTime(isDownbeat ? 2.2 : 1.4, audioContext.currentTime)
+
+    const volumeBoost = 1.5
+    const targetVolume = isDownbeat ? volume * volumeBoost * 1.1 : volume * volumeBoost
+
+    const now = audioContext.currentTime
+
+    // Gentle bongo envelope - medium attack, warm decay
+    gainNode.gain.cancelScheduledValues(now)
+    gainNode.gain.setValueAtTime(0, now)
+    gainNode.gain.linearRampToValueAtTime(targetVolume, now + 0.007)
+    gainNode.gain.exponentialRampToValueAtTime(0.001, now + (isDownbeat ? 0.19 : 0.15))
+
+    oscillator.connect(filter)
+    filter.connect(gainNode)
+
+    return { oscillator, gainNode, soundType: 'gentleWoodenBongo' }
+  }
+
+  private createMellowWoodenChimeSound(audioContext: AudioContext, volume: number, isDownbeat: boolean): { oscillator: OscillatorNode, gainNode: GainNode, soundType: 'mellowWoodenChime' } {
+    const oscillator = audioContext.createOscillator()
+    const gainNode = audioContext.createGain()
+    const filter = audioContext.createBiquadFilter()
+
+    // Base: 960Hz | Downbeat: 768Hz (mellow chime range)
+    const baseFreq = isDownbeat ? 768 : 960
+    oscillator.frequency.setValueAtTime(baseFreq, audioContext.currentTime)
+
+    // Sine wave for pure chime sound
+    oscillator.type = 'sine'
+
+    // Gentle band-pass for focused chime tone
+    filter.type = 'bandpass'
+    filter.frequency.setValueAtTime(1600, audioContext.currentTime)
+    filter.Q.setValueAtTime(isDownbeat ? 4.0 : 2.5, audioContext.currentTime)
+
+    const volumeBoost = 1.2
+    const targetVolume = isDownbeat ? volume * volumeBoost * 1.1 : volume * volumeBoost
+
+    const now = audioContext.currentTime
+
+    // Mellow chime envelope - soft attack, gentle decay
+    gainNode.gain.cancelScheduledValues(now)
+    gainNode.gain.setValueAtTime(0, now)
+    gainNode.gain.linearRampToValueAtTime(targetVolume, now + 0.004)
+    gainNode.gain.exponentialRampToValueAtTime(0.001, now + (isDownbeat ? 0.16 : 0.12))
+
+    oscillator.connect(filter)
+    filter.connect(gainNode)
+
+    return { oscillator, gainNode, soundType: 'mellowWoodenChime' }
+  }
+
   scheduleSound(sound: { oscillator: OscillatorNode, gainNode: GainNode, soundType: SoundType }, time: number, masterGain: GainNode): void {
     const { oscillator, gainNode, soundType } = sound
 
@@ -290,6 +474,21 @@ export class AudioGenerator {
           break
         case 'gentleWoodBlock':
           duration = 0.13
+          break
+        case 'warmWoodenClave':
+          duration = 0.18
+          break
+        case 'softWoodenBlock':
+          duration = 0.20
+          break
+        case 'naturalWoodenLog':
+          duration = 0.22
+          break
+        case 'gentleWoodenBongo':
+          duration = 0.19
+          break
+        case 'mellowWoodenChime':
+          duration = 0.16
           break
         default:
           duration = 0.1

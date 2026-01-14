@@ -11,7 +11,7 @@ export type TimeSignature = {
   beatUnit: number
 }
 
-export type SoundType = 'hollowWood' | 'naturalClave' | 'softLog' | 'mellowBongo' | 'gentleWoodBlock'
+export type SoundType = 'hollowWood' | 'naturalClave' | 'softLog' | 'mellowBongo' | 'gentleWoodBlock' | 'warmWoodenClave' | 'softWoodenBlock' | 'naturalWoodenLog' | 'gentleWoodenBongo' | 'mellowWoodenChime'
 
 export interface AudioContextState {
   audioContext: AudioContext | null

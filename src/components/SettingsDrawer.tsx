@@ -112,6 +112,11 @@ const SettingsDrawer: React.FC<SettingsDrawerProps> = ({
               <option value="softLog">Soft Log</option>
               <option value="mellowBongo">Mellow Bongo</option>
               <option value="gentleWoodBlock">Gentle Wood Block</option>
+              <option value="warmWoodenClave">Warm Wooden Clave</option>
+              <option value="softWoodenBlock">Soft Wooden Block</option>
+              <option value="naturalWoodenLog">Natural Wooden Log</option>
+              <option value="gentleWoodenBongo">Gentle Wooden Bongo</option>
+              <option value="mellowWoodenChime">Mellow Wooden Chime</option>
             </select>
           </section>
 
