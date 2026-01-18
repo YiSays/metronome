@@ -471,6 +471,110 @@
   box-shadow: var(--glow-amber);
 }
 
+/* New sound families - highlighted */
+.patch-btn.new-sound {
+  border-color: var(--synth-cyan);
+  background: linear-gradient(180deg, rgba(0, 212, 255, 0.1) 0%, #0a0a0f 100%);
+}
+
+.patch-btn.new-sound:hover {
+  border-color: var(--synth-amber);
+  background: linear-gradient(180deg, rgba(255, 184, 108, 0.15) 0%, #0a0a0f 100%);
+}
+
+.patch-btn.new-sound.active {
+  border-color: var(--synth-amber);
+  background: linear-gradient(180deg, rgba(255, 184, 108, 0.2) 0%, #0a0a0f 100%);
+  box-shadow: var(--glow-amber);
+}
+
+/* Fine Tune Controls */
+.fine-tune-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  margin-top: 1rem;
+}
+
+.fine-tune-control {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.fine-tune-control label {
+  font-family: 'Space Mono', monospace;
+  font-size: 0.75rem;
+  color: var(--synth-text-dim);
+  letter-spacing: 0.5px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.fine-tune-control label::before {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--synth-steel);
+  margin-right: 0.5rem;
+  opacity: 0.3;
+}
+
+.fine-tune-control label::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--synth-steel);
+  margin-left: 0.5rem;
+  opacity: 0.3;
+}
+
+.fine-tune-value {
+  font-family: 'VT323', monospace;
+  font-size: 1rem;
+  color: var(--synth-cyan);
+  text-shadow: 0 0 4px var(--synth-cyan-glow);
+  min-width: 60px;
+  text-align: right;
+}
+
+/* Stack value with slider for better mobile layout */
+.fine-tune-control {
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.fine-tune-control label {
+  width: 100%;
+  margin: 0;
+}
+
+.fine-tune-control input[type="range"] {
+  flex: 1;
+  min-width: 150px;
+}
+
+.fine-tune-control .fine-tune-value {
+  min-width: auto;
+}
+
+/* Responsive adjustments for fine-tune section */
+@media (max-width: 480px) {
+  .fine-tune-control input[type="range"] {
+    width: 100%;
+    flex: none;
+  }
+
+  .fine-tune-control .fine-tune-value {
+    width: 100%;
+    text-align: left;
+    font-size: 1.1rem;
+  }
+}
+
 .patch-indicator {
   width: 6px;
   height: 6px;

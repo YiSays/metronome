@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Preset } from '../utils/presets';
+import { SoundParams } from '../types';
 import { COMMON_TIME_SIGNATURES } from '../utils/constants';
 import './SettingsDrawer.css';
 
@@ -17,6 +18,8 @@ interface SettingsDrawerProps {
   onTimeSignatureChange: (ts: { beatsPerMeasure: number; beatUnit: number }) => void;
   soundType: string;
   onSoundTypeChange: (type: any) => void;
+  soundParams: SoundParams;
+  onSoundParamsChange: (params: SoundParams) => void;
   onTapTempo: () => void;
   isTapActive: boolean;
   tapBpm: number | null;
@@ -36,10 +39,15 @@ const SettingsDrawer: React.FC<SettingsDrawerProps> = ({
   onTimeSignatureChange,
   soundType,
   onSoundTypeChange,
+  soundParams,
+  onSoundParamsChange,
   onTapTempo
 }) => {
   // Calculate VU meter level based on volume
   const vuLevel = Math.round(volume * 10);
+
+  // Fine Tune section state
+  const [isFineTuneOpen, setIsFineTuneOpen] = useState(false);
 
   return (
     <>
@@ -142,6 +150,12 @@ const SettingsDrawer: React.FC<SettingsDrawerProps> = ({
             </div>
             <div className="patch-bay">
               {[
+                // New musical sound families (highlighted)
+                { value: 'chime', label: 'Chime', isNew: true },
+                { value: 'orchestral', label: 'Orchestral', isNew: true },
+                { value: 'woodyEnhanced', label: 'Woody+', isNew: true },
+                { value: 'softMallet', label: 'Soft Mallet', isNew: true },
+                // Existing wooden percussion (classic)
                 { value: 'hollowWood', label: 'Hollow Wood' },
                 { value: 'naturalClave', label: 'Natural Clave' },
                 { value: 'softLog', label: 'Soft Log' },
@@ -155,14 +169,134 @@ const SettingsDrawer: React.FC<SettingsDrawerProps> = ({
               ].map(patch => (
                 <button
                   key={patch.value}
-                  className={`patch-btn ${soundType === patch.value ? 'active' : ''}`}
-                  onClick={() => onSoundTypeChange(patch.value)}
+                  className={`patch-btn ${soundType === patch.value ? 'active' : ''} ${patch.isNew ? 'new-sound' : ''}`}
+                  onClick={() => {
+                    onSoundTypeChange(patch.value);
+                    // Reset params when switching to new sound family
+                    if (patch.isNew) {
+                      // Find the preset with this sound type and apply its params
+                      const newPreset = presets.find(p => p.soundType === patch.value);
+                      if (newPreset && newPreset.params) {
+                        onSoundParamsChange(newPreset.params);
+                      }
+                    }
+                  }}
                 >
                   <span className="patch-indicator"></span>
                   {patch.label}
                 </button>
               ))}
             </div>
+          </section>
+
+          {/* Fine Tune Section - Expandable */}
+          <section className="drawer-section rack-panel">
+            <div className="rack-panel-header">
+              <h3>FINE TUNE</h3>
+              <span className="panel-led"></span>
+            </div>
+            <button
+              className="rotary-btn"
+              style={{ width: '100%', marginBottom: isFineTuneOpen ? '1rem' : 0 }}
+              onClick={() => setIsFineTuneOpen(!isFineTuneOpen)}
+            >
+              <span className="rotary-btn-indicator"></span>
+              <span className="rotary-btn-text">
+                {isFineTuneOpen ? 'CLOSE TUNING' : 'OPEN TUNING PANEL'}
+              </span>
+            </button>
+
+            {isFineTuneOpen && (
+              <div className="fine-tune-controls">
+                {/* Attack Time */}
+                <div className="fine-tune-control">
+                  <label>Attack (Sharp ↔ Soft)</label>
+                  <input
+                    type="range"
+                    min="1"
+                    max="8"
+                    value={soundParams.attackTime ?? 3}
+                    onChange={(e) => onSoundParamsChange({ ...soundParams, attackTime: parseFloat(e.target.value) })}
+                    className="bpm-slider"
+                  />
+                  <span className="fine-tune-value">{soundParams.attackTime ?? 3}ms</span>
+                </div>
+
+                {/* Decay Time */}
+                <div className="fine-tune-control">
+                  <label>Decay (Short ↔ Long)</label>
+                  <input
+                    type="range"
+                    min="50"
+                    max="300"
+                    value={soundParams.decayTime ?? 150}
+                    onChange={(e) => onSoundParamsChange({ ...soundParams, decayTime: parseFloat(e.target.value) })}
+                    className="bpm-slider"
+                  />
+                  <span className="fine-tune-value">{soundParams.decayTime ?? 150}ms</span>
+                </div>
+
+                {/* Harmonic Content */}
+                <div className="fine-tune-control">
+                  <label>Harmonics (Pure ↔ Rich)</label>
+                  <input
+                    type="range"
+                    min="0"
+                    max="100"
+                    value={soundParams.harmonicContent ?? 50}
+                    onChange={(e) => onSoundParamsChange({ ...soundParams, harmonicContent: parseFloat(e.target.value) })}
+                    className="bpm-slider"
+                  />
+                  <span className="fine-tune-value">{soundParams.harmonicContent ?? 50}%</span>
+                </div>
+
+                {/* Noise Level */}
+                <div className="fine-tune-control">
+                  <label>Noise (Clean ↔ Percussive)</label>
+                  <input
+                    type="range"
+                    min="0"
+                    max="30"
+                    value={soundParams.noiseLevel ?? 0}
+                    onChange={(e) => onSoundParamsChange({ ...soundParams, noiseLevel: parseFloat(e.target.value) })}
+                    className="bpm-slider"
+                  />
+                  <span className="fine-tune-value">{soundParams.noiseLevel ?? 0}%</span>
+                </div>
+
+                {/* Brightness */}
+                <div className="fine-tune-control">
+                  <label>Brightness (Dark ↔ Bright)</label>
+                  <input
+                    type="range"
+                    min="1000"
+                    max="5000"
+                    value={soundParams.brightness ?? 2500}
+                    onChange={(e) => onSoundParamsChange({ ...soundParams, brightness: parseFloat(e.target.value) })}
+                    className="bpm-slider"
+                  />
+                  <span className="fine-tune-value">{soundParams.brightness ?? 2500}Hz</span>
+                </div>
+
+                {/* Reset Button */}
+                <button
+                  className="rotary-btn"
+                  style={{ width: '100%', marginTop: '0.5rem' }}
+                  onClick={() => {
+                    // Find the active preset and reset to its default params
+                    const activePreset = presets.find(p => p.id === activePresetId);
+                    if (activePreset && activePreset.params) {
+                      onSoundParamsChange(activePreset.params);
+                    } else {
+                      onSoundParamsChange({});
+                    }
+                  }}
+                >
+                  <span className="rotary-btn-indicator"></span>
+                  <span className="rotary-btn-text">RESET TO PRESET</span>
+                </button>
+              </div>
+            )}
           </section>
 
           {/* Volume - VU Meter Style */}

@@ -14,10 +14,12 @@ function App() {
     timeSignature,
     soundType,
     volume,
+    soundParams,
     setBpm,
     setTimeSignature,
     setSoundType,
     setVolume,
+    setSoundParams,
     toggle,
     initializeAudio,
     scheduledBeatsRef,
@@ -66,6 +68,8 @@ function App() {
     setTimeSignature(preset.timeSignature)
     setSoundType(preset.soundType)
     setVolume(preset.volume)
+    // Apply preset params if they exist, otherwise clear params
+    setSoundParams(preset.params || {})
   };
 
   const updateActivePreset = (updates: Partial<Preset>) => {
@@ -202,7 +206,7 @@ function App() {
 
       </main>
 
-      <SettingsDrawer 
+      <SettingsDrawer
         isOpen={isSettingsOpen}
         onClose={() => setIsSettingsOpen(false)}
         presets={presets}
@@ -221,6 +225,11 @@ function App() {
         onSoundTypeChange={(type) => {
           setSoundType(type);
           updateActivePreset({ soundType: type });
+        }}
+        soundParams={soundParams}
+        onSoundParamsChange={(params) => {
+          setSoundParams(params);
+          updateActivePreset({ params });
         }}
         onTapTempo={handleTap}
         isTapActive={false}

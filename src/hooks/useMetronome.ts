@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect, useCallback } from 'react'
 import { AudioGenerator } from '../utils/audioGenerator'
-import { TimeSignature, SoundType } from '../types'
+import { TimeSignature, SoundType, SoundParams } from '../types'
 
 export const useMetronome = () => {
   const [isPlaying, setIsPlaying] = useState(false)
@@ -8,6 +8,7 @@ export const useMetronome = () => {
   const [timeSignature, setTimeSignature] = useState<TimeSignature>({ beatsPerMeasure: 4, beatUnit: 4 })
   const [soundType, setSoundType] = useState<SoundType>('hollowWood')
   const [volume, setVolume] = useState(0.5)
+  const [soundParams, setSoundParams] = useState<SoundParams>({})
 
   const audioGenerator = useRef(new AudioGenerator())
   const audioContextRef = useRef<AudioContext | null>(null)
@@ -18,7 +19,7 @@ export const useMetronome = () => {
   const scheduleAheadTimeRef = useRef(0.1)
   const rafTimerRef = useRef<number | null>(null)
   const beatPatternRef = useRef<any>(null)
-  
+
   // Queue for visual synchronization
   // Stores { time: number, beatIndex: number }
   const scheduledBeatsRef = useRef<Array<{ time: number, beatIndex: number }>>([])
@@ -56,7 +57,8 @@ export const useMetronome = () => {
     const currentSoundType = isDownbeat ? downbeat : beat
 
     // Sound generation methods handle volume differentiation internally
-    const newSound = audioGenerator.current.createSound(audioContextRef.current, currentSoundType, volume, isDownbeat)
+    // Pass soundParams for enhanced sound control
+    const newSound = audioGenerator.current.createSound(audioContextRef.current, currentSoundType, volume, isDownbeat, soundParams)
 
     // Schedule the sound
     audioGenerator.current.scheduleSound(newSound, time, masterGainRef.current)
@@ -68,7 +70,7 @@ export const useMetronome = () => {
     if (scheduledBeatsRef.current.length > 50) {
        scheduledBeatsRef.current.shift()
     }
-  }, [volume])
+  }, [volume, soundParams])
 
   const scheduler = useCallback(() => {
     if (!audioContextRef.current || !beatPatternRef.current) return
@@ -185,10 +187,12 @@ export const useMetronome = () => {
     timeSignature,
     soundType,
     volume,
+    soundParams,
     setBpm,
     setTimeSignature,
     setSoundType,
     setVolume,
+    setSoundParams,
     start,
     stop,
     toggle,
