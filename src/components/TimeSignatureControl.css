@@ -1,60 +1,327 @@
+/* TimeSignatureControl - LED 7-Segment Display Style */
+
 .ts-control {
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 1rem;
-  background: rgba(30, 41, 59, 0.5);
-  border: 1px solid rgba(148, 163, 184, 0.1);
-  padding: 0.5rem 1rem;
-  border-radius: 2rem;
-  backdrop-filter: blur(4px);
-  margin-top: 1rem;
+  background: linear-gradient(180deg, #1a1a24 0%, #14141a 100%);
+  border: 1px solid var(--synth-border);
+  padding: 1rem 1.5rem;
+  border-radius: 8px;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.03), 0 4px 12px rgba(0, 0, 0, 0.4);
+  position: relative;
+}
+
+/* Screw heads at corners */
+.ts-control::before,
+.ts-control::after {
+  content: '';
+  position: absolute;
+  width: 5px;
+  height: 5px;
+  background: radial-gradient(circle at 30% 30%, #444, #222);
+  border-radius: 50%;
+  box-shadow: inset 1px 1px 2px rgba(0, 0, 0, 0.8), inset -1px -1px 1px rgba(255, 255, 255, 0.05);
+}
+
+.ts-control::before {
+  top: 6px;
+  left: 6px;
+}
+
+.ts-control::after {
+  top: 6px;
+  right: 6px;
+}
+
+/* Arrow Buttons - Hardware Style */
+.ts-arrow-btn {
+  background: linear-gradient(145deg, #2a2a38, #14141a);
+  border: 1px solid #3a3a48;
+  color: var(--synth-text-dim);
+  width: 44px;
+  height: 44px;
+  border-radius: 4px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.12s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: inset 2px 2px 4px rgba(255, 255, 255, 0.03), inset -2px -2px 4px rgba(0, 0, 0, 0.6);
+  position: relative;
+}
+
+.ts-arrow-btn:hover {
+  color: var(--synth-amber);
+  border-color: var(--synth-amber);
+  box-shadow: var(--glow-amber), inset 2px 2px 4px rgba(255, 255, 255, 0.03), inset -2px -2px 4px rgba(0, 0, 0, 0.6);
+}
+
+.ts-arrow-btn:active,
+.ts-arrow-btn.clicking {
+  transform: translateY(2px) scale(0.95);
+  box-shadow: inset 4px 4px 8px rgba(0, 0, 0, 0.7), inset -2px -2px 4px rgba(255, 255, 255, 0.02);
+  color: var(--synth-amber);
+}
+
+.ts-arrow-btn svg {
+  transition: transform 0.1s ease;
+}
+
+.ts-arrow-btn:hover svg {
+  transform: translateX(-2px);
+}
+
+.ts-arrow-btn:hover + .ts-display-container .ts-arrow-btn:hover svg {
+  transform: translateX(2px);
+}
+
+.ts-arrow-btn:hover svg {
+  transform: translateX(-2px);
+}
+
+/* Target the second button when hovering the container */
+.ts-control:hover .ts-arrow-btn:last-child svg {
+  transform: translateX(2px);
+}
+
+.ts-control:hover .ts-arrow-btn:last-child:hover svg {
+  transform: translateX(0);
+}
+
+/* Display Container - CRT/Digital Display */
+.ts-display-container {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 0.5rem;
 }
 
 .ts-display {
   display: flex;
   align-items: baseline;
   justify-content: center;
-  font-family: 'Courier New', monospace;
-  font-weight: 800;
-  color: #e2e8f0;
-  min-width: 60px;
+  gap: 0.25rem;
+  background: #0a0a0f;
+  padding: 0.75rem 1.25rem;
+  border-radius: 6px;
+  border: 1px solid #2a2a38;
+  box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.9), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  min-width: 90px;
+  position: relative;
+  overflow: hidden;
 }
 
+/* CRT Scanlines overlay */
+.ts-display::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 1px,
+    rgba(0, 212, 255, 0.03) 1px,
+    rgba(0, 212, 255, 0.03) 2px
+  );
+  pointer-events: none;
+}
+
+/* Vignette for CRT effect */
+.ts-display::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(ellipse at center, transparent 60%, rgba(0, 0, 0, 0.5) 100%);
+  pointer-events: none;
+}
+
+/* LED 7-Segment Style Numbers */
 .ts-beats {
-  font-size: 1.5rem;
-  color: #38bdf8;
+  font-family: 'VT323', monospace;
+  font-size: 2rem;
+  color: var(--led-amber);
+  text-shadow:
+    0 0 4px var(--led-amber),
+    0 0 8px rgba(255, 184, 108, 0.6),
+    0 0 12px rgba(255, 184, 108, 0.3);
+  line-height: 1;
+  letter-spacing: 2px;
 }
 
 .ts-divider {
-  font-size: 1.25rem;
-  color: #64748b;
+  font-family: 'VT323', monospace;
+  font-size: 1.5rem;
+  color: #4a4a58;
   margin: 0 2px;
+  text-shadow: 0 0 2px rgba(0, 0, 0, 0.5);
 }
 
 .ts-unit {
-  font-size: 1.25rem;
-  color: #a78bfa;
+  font-family: 'VT323', monospace;
+  font-size: 1.5rem;
+  color: var(--synth-cyan);
+  text-shadow:
+    0 0 4px var(--synth-cyan),
+    0 0 8px rgba(0, 212, 255, 0.6);
+  line-height: 1;
+  letter-spacing: 2px;
 }
 
-.ts-arrow-btn {
-  background: transparent;
-  border: none;
-  color: #64748b;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0.25rem;
-  border-radius: 50%;
-  transition: all 0.2s;
+/* Mechanical "Click" Effect - Digital Counter Animation */
+.ts-display.animate-change {
+  animation: counterClick 0.15s cubic-bezier(0.4, 0, 0.6, 1);
 }
 
-.ts-arrow-btn:hover {
-  background: rgba(255, 255, 255, 0.05);
-  color: #e2e8f0;
+@keyframes counterClick {
+  0% {
+    transform: translateY(0);
+    filter: brightness(1);
+  }
+  40% {
+    transform: translateY(-1px);
+    filter: brightness(1.3);
+  }
+  100% {
+    transform: translateY(0);
+    filter: brightness(1);
+  }
 }
 
-.ts-arrow-btn:active {
-  transform: scale(0.9);
+/* Phosphor Persistence Flash */
+.ts-beats.flash {
+  animation: phosphorFlash 0.2s ease-out;
+}
+
+@keyframes phosphorFlash {
+  0% {
+    text-shadow:
+      0 0 6px var(--led-amber),
+      0 0 16px rgba(255, 184, 108, 0.9),
+      0 0 32px rgba(255, 184, 108, 0.5);
+    color: #ffd4a3;
+  }
+  100% {
+    text-shadow:
+      0 0 4px var(--led-amber),
+      0 0 8px rgba(255, 184, 108, 0.6),
+      0 0 12px rgba(255, 184, 108, 0.3);
+    color: var(--led-amber);
+  }
+}
+
+/* Horizontal LED-style underline indicator */
+.ts-control::after {
+  content: '';
+  position: absolute;
+  bottom: 6px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 60%;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--synth-steel), transparent);
+  opacity: 0.5;
+}
+
+/* Fallback for button icons - amber glow on hover */
+.ts-arrow-btn:hover svg {
+  filter: drop-shadow(0 0 4px var(--synth-amber-glow));
+}
+
+/* Responsive adjustments */
+@media (max-width: 480px) {
+  .ts-control {
+    gap: 0.75rem;
+    padding: 0.75rem 1rem;
+  }
+
+  .ts-arrow-btn {
+    width: 40px;
+    height: 40px;
+  }
+
+  .ts-beats {
+    font-size: 1.75rem;
+  }
+
+  .ts-unit {
+    font-size: 1.25rem;
+  }
+
+  .ts-divider {
+    font-size: 1.25rem;
+  }
+
+  .ts-display {
+    min-width: 70px;
+    padding: 0.5rem 1rem;
+  }
+}
+
+@media (max-width: 360px) {
+  .ts-control {
+    gap: 0.5rem;
+    padding: 0.5rem 0.75rem;
+  }
+
+  .ts-arrow-btn {
+    width: 36px;
+    height: 36px;
+  }
+
+  .ts-beats {
+    font-size: 1.5rem;
+  }
+
+  .ts-unit {
+    font-size: 1.1rem;
+  }
+
+  .ts-display {
+    min-width: 60px;
+    padding: 0.5rem 0.75rem;
+  }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .ts-control {
+    border: 2px solid #4a4a58;
+  }
+
+  .ts-arrow-btn {
+    border: 2px solid #5a5a68;
+  }
+
+  .ts-display {
+    border: 2px solid #3a3a48;
+  }
+
+  .ts-beats {
+    color: #ffaa00;
+    text-shadow: 0 0 8px #ffaa00;
+  }
+
+  .ts-unit {
+    color: #00ccff;
+    text-shadow: 0 0 8px #00ccff;
+  }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .ts-arrow-btn,
+  .ts-display,
+  .ts-beats {
+    transition: none;
+    animation: none;
+  }
 }

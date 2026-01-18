@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Drum Sound Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+        }
+        button {
+            padding: 12px 24px;
+            margin: 10px;
+            font-size: 16px;
+            cursor: pointer;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .sound-btn {
+            display: block;
+            width: 200px;
+            margin: 15px auto;
+        }
+    </style>
+</head>
+<body>
+    <h1>Drum Sound Test</h1>
+    <p>Click each button to test the new drum sounds:</p>
+
+    <button class="sound-btn" onclick="playSound('kick')">Kick Drum</button>
+    <button class="sound-btn" onclick="playSound('snare')">Snare Drum</button>
+    <button class="sound-btn" onclick="playSound('hiHat')">Hi-Hat</button>
+    <button class="sound-btn" onclick="playSound('cowbell')">Cowbell</button>
+    <button class="sound-btn" onclick="playSound('woodBlock')">Wood Block</button>
+
+    <script>
+        let audioContext = null;
+        let masterGain = null;
+
+        // Initialize audio context on first click
+        function initAudio() {
+            if (!audioContext) {
+                audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                masterGain = audioContext.createGain();
+                masterGain.gain.value = 0.5;
+                masterGain.connect(audioContext.destination);
+                console.log('Audio context initialized');
+            }
+        }
+
+        function playSound(soundType) {
+            initAudio();
+
+            // Simple sound generation for testing
+            const now = audioContext.currentTime;
+            const gainNode = audioContext.createGain();
+            gainNode.connect(masterGain);
+
+            switch(soundType) {
+                case 'kick':
+                    // Kick drum
+                    const kickOsc = audioContext.createOscillator();
+                    kickOsc.type = 'sine';
+                    kickOsc.frequency.setValueAtTime(80, now);
+                    kickOsc.frequency.exponentialRampToValueAtTime(40, now + 0.05);
+
+                    const kickFilter = audioContext.createBiquadFilter();
+                    kickFilter.type = 'lowpass';
+                    kickFilter.frequency.setValueAtTime(200, now);
+                    kickFilter.frequency.exponentialRampToValueAtTime(80, now + 0.08);
+                    kickFilter.Q.setValueAtTime(1.2, now);
+
+                    kickOsc.connect(kickFilter);
+                    kickFilter.connect(gainNode);
+
+                    gainNode.gain.setValueAtTime(0, now);
+                    gainNode.gain.linearRampToValueAtTime(0.8, now + 0.002);
+                    gainNode.gain.exponentialRampToValueAtTime(0.001, now + 0.12);
+
+                    kickOsc.start(now);
+                    kickOsc.stop(now + 0.12);
+                    break;
+
+                case 'snare':
+                    // Snare drum
+                    const snareOsc = audioContext.createOscillator();
+                    snareOsc.type = 'sine';
+                    snareOsc.frequency.setValueAtTime(200, now);
+
+                    const noiseBuffer = audioContext.createBuffer(1, audioContext.sampleRate * 0.1, audioContext.sampleRate);
+                    const noiseData = noiseBuffer.getChannelData(0);
+                    for (let i = 0; i < noiseData.length; i++) {
+                        noiseData[i] = Math.random() * 2 - 1;
+                    }
+                    const noiseSource = audioContext.createBufferSource();
+                    noiseSource.buffer = noiseBuffer;
+
+                    const snareFilter = audioContext.createBiquadFilter();
+                    snareFilter.type = 'bandpass';
+                    snareFilter.frequency.setValueAtTime(2000, now);
+                    snareFilter.Q.setValueAtTime(0.8, now);
+
+                    const noiseGain = audioContext.createGain();
+                    noiseGain.gain.setValueAtTime(0, now);
+                    noiseGain.gain.linearRampToValueAtTime(0.6, now + 0.001);
+                    noiseGain.gain.exponentialRampToValueAtTime(0.001, now + 0.048);
+
+                    snareOsc.connect(gainNode);
+                    noiseSource.connect(noiseGain);
+                    noiseGain.connect(snareFilter);
+                    snareFilter.connect(gainNode);
+
+                    gainNode.gain.setValueAtTime(0, now);
+                    gainNode.gain.linearRampToValueAtTime(0.4, now + 0.003);
+                    gainNode.gain.exponentialRampToValueAtTime(0.001, now + 0.08);
+
+                    snareOsc.start(now);
+                    snareOsc.stop(now + 0.08);
+                    noiseSource.start(now);
+                    noiseSource.stop(now + 0.08);
+                    break;
+
+                case 'hiHat':
+                    // Hi-hat
+                    const hatBuffer = audioContext.createBuffer(1, audioContext.sampleRate * 0.05, audioContext.sampleRate);
+                    const hatData = hatBuffer.getChannelData(0);
+                    for (let i = 0; i < hatData.length; i++) {
+                        hatData[i] = Math.random() * 2 - 1;
+                    }
+                    const hatSource = audioContext.createBufferSource();
+                    hatSource.buffer = hatBuffer;
+
+                    const hatFilter = audioContext.createBiquadFilter();
+                    hatFilter.type = 'highpass';
+                    hatFilter.frequency.setValueAtTime(3000, now);
+                    hatFilter.Q.setValueAtTime(1.5, now);
+
+                    hatSource.connect(hatFilter);
+                    hatFilter.connect(gainNode);
+
+                    gainNode.gain.setValueAtTime(0, now);
+                    gainNode.gain.linearRampToValueAtTime(0.5, now + 0.001);
+                    gainNode.gain.exponentialRampToValueAtTime(0.001, now + 0.04);
+
+                    hatSource.start(now);
+                    hatSource.stop(now + 0.04);
+                    break;
+
+                case 'cowbell':
+                    // Cowbell
+                    const cowbellOsc = audioContext.createOscillator();
+                    cowbellOsc.type = 'square';
+                    cowbellOsc.frequency.setValueAtTime(1000, now);
+
+                    const cowbellHarmonic = audioContext.createOscillator();
+                    cowbellHarmonic.type = 'sine';
+                    cowbellHarmonic.frequency.setValueAtTime(2500, now);
+
+                    const cowbellFilter = audioContext.createBiquadFilter();
+                    cowbellFilter.type = 'bandpass';
+                    cowbellFilter.frequency.setValueAtTime(1500, now);
+                    cowbellFilter.Q.setValueAtTime(2.0, now);
+
+                    cowbellOsc.connect(gainNode);
+                    cowbellHarmonic.connect(gainNode);
+                    gainNode.connect(cowbellFilter);
+
+                    gainNode.gain.setValueAtTime(0, now);
+                    gainNode.gain.linearRampToValueAtTime(0.6, now + 0.005);
+                    gainNode.gain.exponentialRampToValueAtTime(0.001, now + 0.07);
+
+                    cowbellOsc.start(now);
+                    cowbellOsc.stop(now + 0.07);
+                    cowbellHarmonic.start(now);
+                    cowbellHarmonic.stop(now + 0.07);
+                    break;
+
+                case 'woodBlock':
+                    // Wood block
+                    const woodOsc = audioContext.createOscillator();
+                    woodOsc.type = 'triangle';
+                    woodOsc.frequency.setValueAtTime(600, now);
+
+                    const woodBuffer = audioContext.createBuffer(1, audioContext.sampleRate * 0.08, audioContext.sampleRate);
+                    const woodData = woodBuffer.getChannelData(0);
+                    for (let i = 0; i < woodData.length; i++) {
+                        woodData[i] = Math.random() * 2 - 1;
+                    }
+                    const woodSource = audioContext.createBufferSource();
+                    woodSource.buffer = woodBuffer;
+
+                    const woodFilter = audioContext.createBiquadFilter();
+                    woodFilter.type = 'bandpass';
+                    woodFilter.frequency.setValueAtTime(1000, now);
+                    woodFilter.Q.setValueAtTime(0.7, now);
+
+                    const woodNoiseGain = audioContext.createGain();
+                    woodNoiseGain.gain.setValueAtTime(0, now);
+                    woodNoiseGain.gain.linearRampToValueAtTime(0.2, now + 0.002);
+                    woodNoiseGain.gain.exponentialRampToValueAtTime(0.001, now + 0.042);
+
+                    woodOsc.connect(gainNode);
+                    woodSource.connect(woodNoiseGain);
+                    woodNoiseGain.connect(woodFilter);
+                    woodFilter.connect(gainNode);
+
+                    gainNode.gain.setValueAtTime(0, now);
+                    gainNode.gain.linearRampToValueAtTime(0.5, now + 0.003);
+                    gainNode.gain.exponentialRampToValueAtTime(0.001, now + 0.06);
+
+                    woodOsc.start(now);
+                    woodOsc.stop(now + 0.06);
+                    woodSource.start(now);
+                    woodSource.stop(now + 0.06);
+                    break;
+            }
+
+            console.log('Playing ' + soundType);
+        }
+
+        // Clean up on page unload
+        window.addEventListener('beforeunload', () => {
+            if (audioContext && audioContext.state !== 'closed') {
+                audioContext.close();
+            }
+        });
+    </script>
+</body>
+</html>

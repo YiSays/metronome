@@ -1,10 +1,13 @@
+/* BpmDial - Analog Synth Studio Rotary Encoder Style */
+
 .bpm-dial-container {
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: 1rem;
+  padding: 2rem;
   position: relative;
   touch-action: none;
+  user-select: none;
 }
 
 .bpm-dial {
@@ -12,21 +15,30 @@
   width: 300px;
   height: 300px;
   user-select: none;
-  cursor: pointer;
+  cursor: grab;
+  transition: transform 0.1s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.bpm-dial.dragging {
+  cursor: grabbing;
+}
+
+.bpm-dial.dragging .dial-svg {
+  filter: drop-shadow(0 0 20px rgba(255, 184, 108, 0.3));
 }
 
 .dial-svg {
   overflow: visible;
-  filter: drop-shadow(0 10px 20px rgba(0,0,0,0.3));
-  transition: transform 0.05s ease-out;
+  filter: drop-shadow(0 10px 30px rgba(0, 0, 0, 0.7));
+  transition: transform 0.08s cubic-bezier(0.4, 0, 0.2, 1), filter 0.2s ease;
 }
 
 .dial-svg.pulse-beat {
-  transform: scale(1.03);
-  filter: drop-shadow(0 0 15px rgba(56, 189, 248, 0.4));
-  transition: transform 0.05s ease-out;
+  transform: scale(1.02);
+  filter: drop-shadow(0 0 25px rgba(255, 184, 108, 0.5));
 }
 
+/* CRT Scanline Overlay for digital display area */
 .dial-center-content {
   position: absolute;
   top: 50%;
@@ -37,77 +49,239 @@
   align-items: center;
   justify-content: center;
   pointer-events: none;
+  width: 160px;
+  height: 160px;
+  border-radius: 50%;
+  background: radial-gradient(circle at center, rgba(10, 10, 15, 0.8) 0%, transparent 70%);
+  box-shadow: inset 0 0 40px rgba(0, 0, 0, 0.8);
+}
+
+/* CRT scanlines overlay */
+.dial-center-content::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 1px,
+    rgba(0, 212, 255, 0.02) 1px,
+    rgba(0, 212, 255, 0.02) 2px
+  );
+  pointer-events: none;
 }
 
 .dial-bpm-label {
-  font-size: 1rem;
-  color: #94a3b8;
-  font-weight: 600;
-  letter-spacing: 2px;
-  margin-bottom: 0.5rem;
+  font-family: 'VT323', monospace;
+  font-size: 1.2rem;
+  color: var(--synth-text-dim);
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  margin-bottom: 0.25rem;
+  text-shadow: 0 0 4px rgba(138, 138, 154, 0.3);
 }
 
 .dial-bpm-value {
-  font-size: 5rem;
-  font-weight: 800;
+  font-family: 'VT323', monospace;
+  font-size: 5.5rem;
   line-height: 1;
-  color: #e2e8f0;
+  color: var(--synth-text-bright);
   font-variant-numeric: tabular-nums;
-  margin-bottom: 1rem;
-  text-shadow: 0 4px 12px rgba(0,0,0,0.5);
-  transition: all 0.05s ease-out;
+  margin-bottom: 0.5rem;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.8);
+  transition: all 0.1s ease-out;
+  letter-spacing: -2px;
 }
 
+/* Phosphor glow effect on LED display */
+.dial-bpm-value.led-glow {
+  color: var(--led-amber);
+  text-shadow:
+    0 0 4px var(--led-amber),
+    0 0 12px rgba(255, 184, 108, 0.8),
+    0 0 24px rgba(255, 184, 108, 0.4);
+}
+
+/* Downbeat flash - brighter amber */
 .dial-bpm-value.flash-text {
-  color: #38bdf8;
-  text-shadow: 0 0 20px rgba(56, 189, 248, 0.8);
-  transform: scale(1.1);
+  color: #ffd4a3;
+  text-shadow:
+    0 0 6px #ffb86c,
+    0 0 20px rgba(255, 184, 108, 0.9),
+    0 0 40px rgba(255, 184, 108, 0.5);
+  transform: scale(1.05);
 }
 
+/* Phosphor persistence trail effect */
+.dial-bpm-value::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  filter: blur(2px);
+  opacity: 0;
+  transition: opacity 0.05s ease-out;
+}
+
+.dial-bpm-value.led-glow::after {
+  opacity: 0.3;
+}
+
+/* Play/Pause Button - Hardware Pushbutton Style */
 .dial-play-btn {
   pointer-events: auto;
   width: 64px;
   height: 64px;
   border-radius: 50%;
   border: none;
-  background: linear-gradient(135deg, #38bdf8, #818cf8);
-  color: white;
+  background: linear-gradient(145deg, #2a2a38, #14141a);
+  color: var(--synth-text-dim);
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  box-shadow: 0 4px 15px rgba(56, 189, 248, 0.4);
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow:
+    inset 2px 2px 4px rgba(255, 255, 255, 0.03),
+    inset -2px -2px 4px rgba(0, 0, 0, 0.6),
+    4px 4px 12px rgba(0, 0, 0, 0.5);
+  transition: all 0.12s cubic-bezier(0.4, 0, 0.2, 1);
+  border: 1px solid var(--synth-border);
 }
 
 .dial-play-btn:hover {
-  transform: scale(1.05);
-  box-shadow: 0 6px 20px rgba(56, 189, 248, 0.5);
+  color: var(--synth-amber);
+  box-shadow:
+    inset 2px 2px 4px rgba(255, 255, 255, 0.05),
+    inset -2px -2px 4px rgba(0, 0, 0, 0.7),
+    0 0 20px var(--synth-amber-glow);
+  border-color: var(--synth-amber);
 }
 
 .dial-play-btn:active {
-  transform: scale(0.95);
+  transform: translateY(2px) scale(0.95);
+  box-shadow:
+    inset 4px 4px 8px rgba(0, 0, 0, 0.7),
+    inset -2px -2px 4px rgba(255, 255, 255, 0.02);
 }
 
+/* Playing state - Red LED button */
 .dial-play-btn.playing {
-  background: linear-gradient(135deg, #ef4444, #f43f5e);
-  box-shadow: 0 4px 15px rgba(239, 68, 68, 0.4);
+  background: linear-gradient(145deg, #3d1a1a, #1a0a0a);
+  color: var(--led-red);
+  border-color: #ff4444;
+  box-shadow:
+    inset 2px 2px 4px rgba(255, 255, 255, 0.03),
+    inset -2px -2px 4px rgba(0, 0, 0, 0.7),
+    0 0 15px rgba(255, 68, 68, 0.4);
 }
 
 .dial-play-btn.playing:hover {
-  box-shadow: 0 6px 20px rgba(239, 68, 68, 0.5);
+  color: #ff6666;
+  box-shadow:
+    inset 2px 2px 4px rgba(255, 255, 255, 0.05),
+    0 0 25px rgba(255, 68, 68, 0.6),
+    0 0 40px rgba(255, 68, 68, 0.3);
 }
 
-@media (max-width: 360px) {
+.dial-play-btn.playing:active {
+  transform: translateY(2px) scale(0.95);
+  box-shadow:
+    inset 4px 4px 8px rgba(0, 0, 0, 0.8),
+    inset -2px -2px 4px rgba(255, 255, 255, 0.02);
+}
+
+/* Responsive adjustments */
+@media (max-width: 480px) {
+  .bpm-dial-container {
+    padding: 1rem;
+  }
+
   .bpm-dial {
     width: 260px;
     height: 260px;
   }
+
   .dial-svg {
     width: 260px;
     height: 260px;
   }
+
+  .dial-bpm-value {
+    font-size: 4.5rem;
+  }
+
+  .dial-bpm-label {
+    font-size: 1rem;
+  }
+
+  .dial-play-btn {
+    width: 56px;
+    height: 56px;
+  }
+
+  .dial-center-content {
+    width: 140px;
+    height: 140px;
+  }
+}
+
+@media (max-width: 360px) {
+  .bpm-dial {
+    width: 220px;
+    height: 220px;
+  }
+
+  .dial-svg {
+    width: 220px;
+    height: 220px;
+  }
+
   .dial-bpm-value {
     font-size: 4rem;
+  }
+
+  .dial-center-content {
+    width: 120px;
+    height: 120px;
+  }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .dial-bpm-value {
+    color: #ffffff;
+    text-shadow: 0 0 2px #000;
+  }
+
+  .dial-bpm-value.led-glow {
+    color: #ffaa00;
+    text-shadow: 0 0 8px #ffaa00;
+  }
+
+  .dial-play-btn {
+    border: 2px solid var(--synth-border);
+  }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .dial-svg,
+  .dial-bpm-value,
+  .dial-play-btn {
+    transition: none;
+  }
+
+  .dial-svg.pulse-beat {
+    transform: none;
+  }
+
+  .dial-center-content::before {
+    display: none;
   }
 }

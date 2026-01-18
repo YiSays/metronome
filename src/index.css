@@ -1,10 +1,64 @@
+/* Import Google Fonts - Must be at the top */
+@import url('https://fonts.googleapis.com/css2?family=VT323&family=Space+Mono:wght@400;700&display=swap');
+
+/* Analog Synth Studio Theme */
 :root {
-  --bg-color: #0f172a;
-  --surface-color: #1e293b;
-  --text-color: #e2e8f0;
-  --accent-color: #38bdf8;
-  --danger-color: #ef4444;
-  --success-color: #22c55e;
+  /* Base Colors */
+  --synth-bg: #0a0a0f;
+  --synth-surface: #14141a;
+  --synth-panel: #1a1a24;
+  --synth-border: #2a2a38;
+
+  /* Accent Colors */
+  --synth-amber: #ffb86c;
+  --synth-amber-glow: rgba(255, 184, 108, 0.5);
+  --synth-cyan: #00d4ff;
+  --synth-cyan-glow: rgba(0, 212, 255, 0.6);
+  --synth-copper: #b87333;
+  --synth-steel: #6b7280;
+
+  /* Text Colors */
+  --synth-text: #e8e8e8;
+  --synth-text-dim: #8a8a9a;
+  --synth-text-bright: #fff8e7;
+
+  /* LED/Display Colors */
+  --led-amber: #ffb86c;
+  --led-cyan: #00d4ff;
+  --led-red: #ff4444;
+  --led-green: #44ff88;
+
+  /* Shadows & Glows */
+  --glow-amber: 0 0 10px var(--synth-amber-glow), 0 0 20px var(--synth-amber-glow);
+  --glow-cyan: 0 0 8px var(--synth-cyan-glow), 0 0 16px var(--synth-cyan-glow);
+  --shadow-deep: 0 8px 32px rgba(0, 0, 0, 0.8);
+  --shadow-inner: inset 0 1px 2px rgba(255, 255, 255, 0.05), inset 0 -1px 2px rgba(0, 0, 0, 0.5);
+
+  /* Hardware Effects */
+  --bezel-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.6), inset 0 -2px 4px rgba(255, 255, 255, 0.03);
+  --metallic-shine: linear-gradient(180deg, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0.02) 50%, rgba(0,0,0,0.3) 100%);
+
+  /* Legacy mappings (for backward compatibility) */
+  --bg-color: var(--synth-bg);
+  --surface-color: var(--synth-panel);
+  --text-color: var(--synth-text);
+  --accent-color: var(--synth-cyan);
+  --danger-color: #ff4444;
+  --success-color: #44ff88;
+}
+
+/* Grain Texture Overlay */
+body::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  opacity: 0.03;
+  z-index: 9999;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
 }
 
 * {
@@ -14,37 +68,65 @@
 }
 
 body {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
+  font-family: 'Space Mono', monospace;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background-color: var(--bg-color);
-  color: var(--text-color);
+  background-color: var(--synth-bg);
+  color: var(--synth-text);
   height: 100vh;
   display: flex;
   flex-direction: column;
+  overflow: hidden;
+}
+
+/* CRT Vignette Effect */
+body::after {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 9998;
+  background: radial-gradient(ellipse at center, transparent 0%, rgba(0,0,0,0.4) 100%);
 }
 
 code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
+  font-family: 'VT323', monospace;
+  font-size: 1.1em;
 }
 
-/* Custom scrollbar */
+/* Custom scrollbar - Synth Studio styled */
 ::-webkit-scrollbar {
   width: 8px;
 }
 
 ::-webkit-scrollbar-track {
-  background: var(--surface-color);
+  background: var(--synth-panel);
+  box-shadow: inset 0 0 4px rgba(0,0,0,0.5);
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #475569;
+  background: var(--synth-steel);
   border-radius: 4px;
+  border: 1px solid var(--synth-border);
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #64748b;
+  background: var(--synth-copper);
+  box-shadow: var(--glow-amber);
+}
+
+/* Selection styling */
+::selection {
+  background: var(--synth-amber);
+  color: var(--synth-bg);
+}
+
+/* Focus ring for accessibility */
+:focus-visible {
+  outline: 2px solid var(--synth-cyan);
+  outline-offset: 2px;
+  box-shadow: var(--glow-cyan);
 }

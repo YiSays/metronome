@@ -38,92 +38,148 @@ const SettingsDrawer: React.FC<SettingsDrawerProps> = ({
   onSoundTypeChange,
   onTapTempo
 }) => {
+  // Calculate VU meter level based on volume
+  const vuLevel = Math.round(volume * 10);
+
   return (
     <>
       <div className={`drawer-overlay ${isOpen ? 'open' : ''}`} onClick={onClose} />
       <div className={`drawer ${isOpen ? 'open' : ''}`}>
         <div className="drawer-header">
-          <h2>Settings</h2>
-          <button className="close-btn" onClick={onClose}>&times;</button>
+          <div className="rack-title">
+            <span className="rack-title-text">RACK UNIT 01</span>
+            <span className="rack-indicator"></span>
+          </div>
+          <button className="close-btn" onClick={onClose} aria-label="Close settings">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <path d="M18 6L6 18M6 6l12 12" />
+            </svg>
+          </button>
         </div>
 
         <div className="drawer-content">
-          <section className="drawer-section">
-             <h3>Tempo (BPM)</h3>
-             <div className="drawer-bpm-control">
-                <span className="drawer-bpm-value">{bpm}</span>
-                <input 
-                  type="range" 
-                  min="40" 
-                  max="240" 
-                  value={bpm}
-                  onChange={(e) => onBpmChange(parseInt(e.target.value))}
-                  className="volume-slider-drawer"
-                />
-             </div>
+          {/* Tempo Control Panel */}
+          <section className="drawer-section rack-panel">
+            <div className="rack-panel-header">
+              <h3>TEMPO CONTROL</h3>
+              <span className="panel-led"></span>
+            </div>
+            <div className="drawer-bpm-control">
+              <div className="bpm-display">
+                <span className="bpm-value">{bpm}</span>
+                <span className="bpm-label">BPM</span>
+              </div>
+              <input
+                type="range"
+                min="40"
+                max="240"
+                value={bpm}
+                onChange={(e) => onBpmChange(parseInt(e.target.value))}
+                className="bpm-slider"
+              />
+            </div>
           </section>
 
-          <section className="drawer-section">
-            <h3>Presets</h3>
-            <div className="drawer-presets-grid">
+          {/* Presets - Toggle Switch Style */}
+          <section className="drawer-section rack-panel">
+            <div className="rack-panel-header">
+              <h3>PRESETS</h3>
+              <span className="panel-led"></span>
+            </div>
+            <div className="preset-switch-grid">
               {presets.map(preset => (
-                <button
+                <label
                   key={preset.id}
-                  className={`drawer-preset-btn ${activePresetId === preset.id ? 'active' : ''}`}
-                  onClick={() => onSelectPreset(preset.id)}
+                  className={`preset-switch ${activePresetId === preset.id ? 'active' : ''}`}
                 >
-                  <span className="preset-name">{preset.name}</span>
-                  <span className="preset-meta">{preset.bpm} BPM</span>
-                </button>
+                  <input
+                    type="radio"
+                    name="preset"
+                    checked={activePresetId === preset.id}
+                    onChange={() => onSelectPreset(preset.id)}
+                  />
+                  <span className="switch-track"></span>
+                  <span className="preset-info">
+                    <span className="preset-name">{preset.name}</span>
+                    <span className="preset-meta">{preset.bpm} BPM</span>
+                  </span>
+                </label>
               ))}
             </div>
           </section>
 
-          <section className="drawer-section">
-            <h3>Time Signature</h3>
-            <div className="ts-selector">
-              {COMMON_TIME_SIGNATURES.map(ts => (
+          {/* Time Signature - Rotary Button Bank */}
+          <section className="drawer-section rack-panel">
+            <div className="rack-panel-header">
+              <h3>TIME SIGNATURE</h3>
+              <span className="panel-led"></span>
+            </div>
+            <div className="rotary-button-bank">
+              {COMMON_TIME_SIGNATURES.map(ts => {
+                const isActive = timeSignature.beatsPerMeasure === ts.beats && timeSignature.beatUnit === ts.unit;
+                return (
+                  <button
+                    key={`${ts.beats}/${ts.unit}`}
+                    className={`rotary-btn ${isActive ? 'active' : ''}`}
+                    onClick={() => onTimeSignatureChange({
+                      beatsPerMeasure: ts.beats,
+                      beatUnit: ts.unit
+                    })}
+                  >
+                    <span className="rotary-btn-indicator"></span>
+                    <span className="rotary-btn-text">{ts.beats}/{ts.unit}</span>
+                  </button>
+                );
+              })}
+            </div>
+          </section>
+
+          {/* Sound Selector - Patch Bay Style */}
+          <section className="drawer-section rack-panel">
+            <div className="rack-panel-header">
+              <h3>SOUND PATCH</h3>
+              <span className="panel-led"></span>
+            </div>
+            <div className="patch-bay">
+              {[
+                { value: 'hollowWood', label: 'Hollow Wood' },
+                { value: 'naturalClave', label: 'Natural Clave' },
+                { value: 'softLog', label: 'Soft Log' },
+                { value: 'mellowBongo', label: 'Mellow Bongo' },
+                { value: 'gentleWoodBlock', label: 'Wood Block' },
+                { value: 'warmWoodenClave', label: 'Warm Clave' },
+                { value: 'softWoodenBlock', label: 'Soft Block' },
+                { value: 'naturalWoodenLog', label: 'Wooden Log' },
+                { value: 'gentleWoodenBongo', label: 'Wood Bongo' },
+                { value: 'mellowWoodenChime', label: 'Wood Chime' }
+              ].map(patch => (
                 <button
-                  key={`${ts.beats}/${ts.unit}`}
-                  className={`ts-btn ${
-                    timeSignature.beatsPerMeasure === ts.beats && 
-                    timeSignature.beatUnit === ts.unit ? 'active' : ''
-                  }`}
-                  onClick={() => onTimeSignatureChange({ 
-                    beatsPerMeasure: ts.beats, 
-                    beatUnit: ts.unit 
-                  })}
+                  key={patch.value}
+                  className={`patch-btn ${soundType === patch.value ? 'active' : ''}`}
+                  onClick={() => onSoundTypeChange(patch.value)}
                 >
-                  {ts.beats}/{ts.unit}
+                  <span className="patch-indicator"></span>
+                  {patch.label}
                 </button>
               ))}
             </div>
           </section>
 
-          <section className="drawer-section">
-            <h3>Sound</h3>
-            <select
-              value={soundType}
-              onChange={(e) => onSoundTypeChange(e.target.value)}
-              className="drawer-select"
-            >
-              <option value="hollowWood">Hollow Wood</option>
-              <option value="naturalClave">Natural Clave</option>
-              <option value="softLog">Soft Log</option>
-              <option value="mellowBongo">Mellow Bongo</option>
-              <option value="gentleWoodBlock">Gentle Wood Block</option>
-              <option value="warmWoodenClave">Warm Wooden Clave</option>
-              <option value="softWoodenBlock">Soft Wooden Block</option>
-              <option value="naturalWoodenLog">Natural Wooden Log</option>
-              <option value="gentleWoodenBongo">Gentle Wooden Bongo</option>
-              <option value="mellowWoodenChime">Mellow Wooden Chime</option>
-            </select>
-          </section>
-
-          <section className="drawer-section">
-            <h3>Volume</h3>
-            <div className="volume-control-drawer">
-              <span className="vol-icon">🔈</span>
+          {/* Volume - VU Meter Style */}
+          <section className="drawer-section rack-panel">
+            <div className="rack-panel-header">
+              <h3>OUTPUT LEVEL</h3>
+              <span className="panel-led"></span>
+            </div>
+            <div className="vu-meter-control">
+              <div className="vu-meter">
+                {[...Array(10)].map((_, i) => (
+                  <div
+                    key={i}
+                    className={`vu-segment ${i < vuLevel ? 'active' : ''} ${i >= 8 ? 'peak' : ''}`}
+                  ></div>
+                ))}
+              </div>
               <input
                 type="range"
                 min="0"
@@ -131,17 +187,24 @@ const SettingsDrawer: React.FC<SettingsDrawerProps> = ({
                 step="0.01"
                 value={volume}
                 onChange={(e) => onVolumeChange(parseFloat(e.target.value))}
-                className="volume-slider-drawer"
+                className="vu-slider"
               />
-              <span className="vol-icon">🔊</span>
             </div>
           </section>
-          
-           <section className="drawer-section">
-            <h3>Tools</h3>
-             <button className="drawer-action-btn" onClick={onTapTempo}>
-               Tap Tempo
-             </button>
+
+          {/* Tap Tempo - Record Button Style */}
+          <section className="drawer-section rack-panel">
+            <div className="rack-panel-header">
+              <h3>TOOLS</h3>
+              <span className="panel-led"></span>
+            </div>
+            <button
+              className="rec-btn"
+              onClick={onTapTempo}
+            >
+              <span className="rec-indicator"></span>
+              <span className="rec-text">TAP</span>
+            </button>
           </section>
         </div>
       </div>
